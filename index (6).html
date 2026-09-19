@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAT 210 Advanced Statistics — Diagnostic Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spectral:ital,wght@0,500;0,600;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16233f; --ink-soft:#22325a; --paper:#eef1f6; --surface:#ffffff;
+  --text:#232a36; --muted:#626c7c; --blue:#2f6db0; --blue-soft:#e7f0fa;
+  --gold:#d99a24; --gold-soft:#fbf6ea; --code-bg:#1b2438; --code-text:#e7ecf7;
+  --rule:#dde3ec; --ok:#1f9d57; --bad:#cf3a3a;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0; background:var(--paper); color:var(--text);
+  font-family:"Inter",system-ui,-apple-system,sans-serif; font-size:17px; line-height:1.6;
+  -webkit-font-smoothing:antialiased; min-height:100vh; display:flex; flex-direction:column;}
+.wrap{width:100%; max-width:760px; margin:0 auto; padding:28px 20px 60px; flex:1;}
+
+/* Header bar */
+.topbar{background:var(--ink); color:#fff;}
+.topbar .inner{max-width:760px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.topbar .brand{display:flex; align-items:center; gap:13px;}
+.topbar .seal{width:54px; height:54px; flex-shrink:0; display:block;}
+.topbar .seal img{width:100%; height:100%; object-fit:contain; display:block;}
+.topbar .kick{font-family:"JetBrains Mono",monospace; font-size:.7rem; letter-spacing:.1em; color:var(--gold);}
+.topbar h1{font-family:"Spectral",serif; font-weight:600; font-size:1.12rem; margin:2px 0 0; line-height:1.2;}
+.topbar .who{font-size:.72rem; color:#aab6cc; text-align:right; line-height:1.45;}
+.topbar .who b{color:#fff;}
+
+/* Progress */
+.progress{margin:22px 0 6px;}
+.progress .meta{display:flex; justify-content:space-between; align-items:baseline; font-family:"JetBrains Mono",monospace; font-size:.74rem; color:var(--muted); margin-bottom:7px;}
+.progress .meta .qof{color:var(--ink-soft); font-weight:600;}
+.bar{height:7px; background:#e2e7f0; border-radius:99px; overflow:hidden;}
+.bar > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--blue),var(--gold)); border-radius:99px; transition:width .25s ease;}
+
+/* Cards / panels */
+.panel{background:var(--surface); border:1px solid var(--rule); border-radius:14px; padding:26px 26px 24px; box-shadow:0 1px 2px rgba(20,30,60,.04);}
+h2{font-family:"Spectral",serif; color:var(--ink); font-weight:600; margin:0 0 .4rem; line-height:1.2;}
+.lead{color:var(--muted); font-size:.95rem; margin:.2rem 0 1.2rem;}
+
+/* Coverage list on the start screen */
+.coverage{margin:0 0 20px; padding:16px 18px; background:#f6f8fc; border:1px solid var(--rule); border-radius:10px;}
+.coverage h3{font-family:"Spectral",serif; font-size:.98rem; color:var(--ink); margin:0 0 9px; font-weight:600;}
+.coverage ol{margin:0; padding-left:20px; font-size:.87rem; color:var(--ink-soft);}
+.coverage li{padding:2px 0;}
+
+/* Identity form */
+.field{margin:14px 0;}
+.field label{display:block; font-size:.78rem; font-weight:600; color:var(--ink-soft); letter-spacing:.02em; margin-bottom:6px;}
+.field input{width:100%; font-family:"Inter",sans-serif; font-size:1rem; padding:11px 13px; border:1px solid var(--rule); border-radius:9px; background:#fbfcfe; color:var(--text);}
+.field input:focus{outline:2px solid var(--blue-soft); border-color:var(--blue);}
+.field .hint{font-size:.74rem; color:var(--muted); margin-top:5px;}
+
+/* Question */
+.qhead{display:flex; align-items:flex-start; gap:10px; margin-bottom:6px;}
+.qnum{font-family:"JetBrains Mono",monospace; font-size:.74rem; color:#fff; background:var(--ink); padding:3px 9px; border-radius:6px; flex-shrink:0; margin-top:3px;}
+.qtitle{font-family:"Spectral",serif; font-weight:600; font-size:1.1rem; line-height:1.4; color:var(--ink);}
+.qdomain{font-family:"JetBrains Mono",monospace; font-size:.68rem; color:var(--muted); margin:0 0 14px 44px;}
+pre.code{background:var(--code-bg); color:var(--code-text); border-radius:10px; padding:16px 16px 14px;
+  overflow-x:auto; margin:14px 0 18px; position:relative; border:1px solid #0f1626;
+  font-family:"JetBrains Mono",monospace; font-size:.8rem; line-height:1.6; white-space:pre;}
+pre.code::before{content:"output"; position:absolute; top:0; right:0; font-family:"JetBrains Mono",monospace; font-size:.6rem;
+  letter-spacing:.1em; color:var(--ink); background:var(--gold); padding:2px 9px; border-radius:0 9px 0 9px; font-weight:600;}
+
+/* Options */
+.opts{list-style:none; padding:0; margin:0;}
+.opt{display:flex; align-items:center; gap:12px; padding:13px 15px; margin:9px 0; border:1.5px solid var(--rule);
+  border-radius:10px; background:#fbfcfe; cursor:pointer; transition:border-color .12s, background .12s;}
+.opt:hover{border-color:#b9c6dd; background:#f5f8fc;}
+.opt.sel{border-color:var(--blue); background:var(--blue-soft);}
+.opt:focus-visible{outline:2px solid var(--blue); outline-offset:2px;}
+.opt .let{font-family:"JetBrains Mono",monospace; font-weight:600; font-size:.86rem; color:var(--muted);
+  width:26px; height:26px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  border:1.5px solid var(--rule); border-radius:50%; background:#fff;}
+.opt.sel .let{color:#fff; background:var(--blue); border-color:var(--blue);}
+.opt .txt{font-size:.96rem;}
+
+/* Nav buttons */
+.actions{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:22px;}
+.btn{font-family:"Inter",sans-serif; font-size:.95rem; font-weight:600; padding:12px 24px; border-radius:10px;
+  border:1px solid transparent; cursor:pointer; transition:filter .12s, background .12s;}
+.btn:disabled{opacity:.45; cursor:not-allowed;}
+.btn-primary{background:var(--ink); color:#fff;}
+.btn-primary:hover:not(:disabled){filter:brightness(1.15);}
+.btn-gold{background:var(--gold); color:#1a1303;}
+.btn-gold:hover:not(:disabled){filter:brightness(1.06);}
+.btn-ghost{background:transparent; color:var(--muted); border-color:var(--rule);}
+.btn-ghost:hover:not(:disabled){color:var(--ink); border-color:#b9c6dd;}
+.note{font-family:"JetBrains Mono",monospace; font-size:.72rem; color:var(--muted);}
+
+/* Completion */
+.center{text-align:center;}
+.bigmark{width:64px; height:64px; border-radius:50%; background:var(--gold-soft); border:2px solid var(--gold);
+  color:var(--gold); display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin:6px auto 16px;}
+.summary{background:#f6f8fc; border:1px solid var(--rule); border-radius:10px; padding:14px 18px; margin:18px 0; text-align:left; font-size:.92rem;}
+.summary div{display:flex; justify-content:space-between; gap:14px; padding:4px 0; border-top:1px solid var(--rule);}
+.summary div:first-child{border-top:none;}
+.summary b{color:var(--ink-soft); text-align:right;}
+.statusmsg{font-size:.9rem; margin-top:14px; padding:11px 14px; border-radius:9px; display:none; text-align:left;}
+.statusmsg.show{display:block;}
+.statusmsg.good{background:#eaf6ef; color:#1f5b3a; border:1px solid #bfe3cd;}
+.statusmsg.bad{background:#fceaea; color:#8a2b2b; border:1px solid #e9c3c3;}
+.statusmsg.info{background:var(--blue-soft); color:#1c4f86; border:1px solid #c5dcf2;}
+
+.hide{display:none !important;}
+footer{max-width:760px; margin:0 auto; padding:18px 20px 34px; font-size:.74rem;
+  color:var(--muted); text-align:center; line-height:1.6;}
+footer .seal-sm{display:block; width:38px; height:38px; margin:0 auto 10px;}
+@media (max-width:600px){
+  .panel{padding:20px 18px;}
+  .topbar .who{text-align:left;}
+  .qdomain{margin-left:0;}
+  .actions{flex-wrap:wrap;}
+  .btn{flex:1 1 auto;}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *{transition:none !important;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="inner">
+    <div class="brand">
+      <span class="seal"><img src="data:image/png;base64,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" alt="Rizal Technological University seal"></span>
+      <div>
+        <div class="kick">STAT 210 &middot; DIAGNOSTIC TEST</div>
+        <h1>Advanced Statistics</h1>
+      </div>
+    </div>
+    <div class="who">Prepared by<br><b>Dr. Ryan Manuel D. Guido</b></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- Progress (hidden until the test starts) -->
+  <div class="progress hide" id="progress">
+    <div class="meta"><span class="qof" id="qof">Question 1 of 60</span><span id="answeredCount">0 answered</span></div>
+    <div class="bar"><i id="barfill"></i></div>
+  </div>
+
+  <!-- ===== START SCREEN ===== -->
+  <section class="panel" id="startScreen">
+    <h2>Before you begin</h2>
+    <p class="lead">This is a 60-item diagnostic test on the use, protocols and assumptions of parametric and non-parametric procedures. It is taken at the start of the course to locate what you already handle well and what we need to work on, so it is not graded for credit. Read each item, choose the <b>best</b> answer, and select <b>Next</b>; the following item appears only once you have answered. No score is shown on screen — your responses go to your instructor, who returns a profile of your strong and weak areas.</p>
+
+    <div class="coverage">
+      <h3>What the test covers</h3>
+      <ol id="coverList"></ol>
+    </div>
+
+    <div class="field"><label for="fName">Full name</label><input id="fName" type="text" autocomplete="name" placeholder="e.g., Maria Santos"></div>
+    <div class="field"><label for="fId">Student number</label><input id="fId" type="text" placeholder="e.g., 2026-12345"></div>
+    <div class="field"><label for="fSection">Program and section</label><input id="fSection" type="text" placeholder="e.g., MBA — STAT 210"></div>
+    <div class="field"><label for="fEmail">Your email <span style="font-weight:400;color:var(--muted)">(RTU email)</span></label><input id="fEmail" type="email" autocomplete="email" placeholder="you@rtu.edu.ph"></div>
+    <div class="actions" style="justify-content:flex-end;">
+      <button class="btn btn-primary" id="startBtn">Start the test</button>
+    </div>
+    <p class="note" style="margin-top:14px;">60 items &middot; one at a time &middot; about 45 minutes &middot; no score shown on screen</p>
+  </section>
+
+  <!-- ===== QUESTION SCREEN ===== -->
+  <section class="panel hide" id="quizScreen">
+    <div class="qhead"><span class="qnum" id="qBadge">Q1</span><span class="qtitle" id="qPrompt"></span></div>
+    <div class="qdomain" id="qDomain"></div>
+    <pre class="code" id="qCode"></pre>
+    <ul class="opts" id="qOpts"></ul>
+    <div class="actions">
+      <button class="btn btn-ghost" id="prevBtn">Back</button>
+      <button class="btn btn-primary" id="nextBtn" disabled>Next</button>
+    </div>
+  </section>
+
+  <!-- ===== COMPLETION SCREEN ===== -->
+  <section class="panel center hide" id="doneScreen">
+    <div class="bigmark">&#10003;</div>
+    <h2>All 60 items answered</h2>
+    <p class="lead">Your responses are ready to send. The diagnostic profile is computed when your instructor receives them; it is not shown here.</p>
+    <div class="summary">
+      <div><span>Name</span><b id="sName">—</b></div>
+      <div><span>Student number</span><b id="sId">—</b></div>
+      <div><span>Program and section</span><b id="sSection">—</b></div>
+      <div><span>Items answered</span><b id="sAnswered">0 / 60</b></div>
+    </div>
+    <div class="actions" style="justify-content:center; gap:14px;">
+      <button class="btn btn-ghost" id="reviewBtn">Review answers</button>
+      <button class="btn btn-gold" id="sendBtn">Send to instructor</button>
+    </div>
+    <div class="statusmsg" id="statusMsg"></div>
+    <p class="note" id="destNote" style="margin-top:16px;"></p>
+  </section>
+
+</div>
+
+<footer>
+  <img class="seal-sm" src="data:image/png;base64,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" alt="">
+  Prepared by Dr. Ryan Manuel D. Guido for the class Stat210 Advanced Statistics.<br>
+  Rizal Technological University
+</footer>
+
+<script>
+/* ====================================================================
+   SUBMISSION CONFIG — set this ONCE before sharing the test.
+   --------------------------------------------------------------------
+   A standalone HTML page cannot send email by itself, so responses are
+   POSTed to Formspree, which delivers them to the instructor's inbox.
+   The respondent never sees a score.
+
+   SETUP (about 2 minutes, one time):
+     1. Go to https://formspree.io and sign in using rmguido@rtu.edu.ph
+        (the address that should receive the results).
+     2. Create a new form and confirm the verification email.
+     3. Copy the form endpoint, e.g. https://formspree.io/f/abcdwxyz
+     4. Paste it below as the value of `endpoint`.
+   Until a valid endpoint is set, the Send button shows a configuration
+   notice rather than failing silently.
+   ==================================================================== */
+const CONFIG = {
+  endpoint: "https://formspree.io/f/REPLACE_WITH_FORMSPREE_ID",
+  instructorEmail: "rmguido@rtu.edu.ph",
+  testName: "STAT 210 Advanced Statistics — Diagnostic Test"
+};
+
+const QUESTIONS = [
+{
+"prompt": "A researcher compares two independent groups on a single five-point Likert item (strongly disagree to strongly agree). Judged strictly by the item's level of measurement, the defensible default test is:",
+"code": "",
+"options": [
+"Mann-Whitney U, because a single Likert item yields ordinal data",
+"A chi-square goodness-of-fit test, because the responses are counts",
+"A paired-samples t-test, because the same scale is administered to both groups",
+"An independent-samples t-test, because the response codes 1 to 5 are numbers"
+],
+"answer": 0,
+"domain": "Measurement and test selection"
+},
+{
+"prompt": "Thirty patients are measured before and after an intervention. The difference scores are markedly skewed and contain two extreme values. The most defensible test is:",
+"code": "",
+"options": [
+"A one-way between-groups ANOVA",
+"An independent-samples t-test",
+"Mann-Whitney U",
+"The Wilcoxon signed-rank test"
+],
+"answer": 3,
+"domain": "Measurement and test selection"
+},
+{
+"prompt": "Which question most directly decides whether a paired or an independent-samples procedure is required?",
+"code": "",
+"options": [
+"Whether the group variances are equal",
+"Whether the total sample size exceeds 30",
+"Whether each observation in one set is linked to a specific observation in the other",
+"Whether the dependent variable is skewed"
+],
+"answer": 2,
+"domain": "Measurement and test selection"
+},
+{
+"prompt": "Annual household income is compared across four regions, with 25 households per region and income strongly right-skewed. The best-supported choice is:",
+"code": "",
+"options": [
+"A one-way ANOVA, because ANOVA is robust under all conditions",
+"Four separate one-sample t-tests",
+"A chi-square test of independence",
+"The Kruskal-Wallis H test"
+],
+"answer": 3,
+"domain": "Measurement and test selection"
+},
+{
+"prompt": "A report states that 30 degrees Celsius is 'twice as warm' as 15 degrees Celsius. The measurement error here is that:",
+"code": "",
+"options": [
+"There is no error, because temperature is a ratio scale",
+"Celsius is nominal, so no arithmetic is permitted on it",
+"Celsius is ordinal, so only the median is defensible",
+"Celsius is an interval scale whose zero point is arbitrary, so ratio statements are not meaningful"
+],
+"answer": 3,
+"domain": "Measurement and test selection"
+},
+{
+"prompt": "The outcome is whether a customer renews a subscription (yes or no) and the predictor is branch (three branches). The appropriate procedure is:",
+"code": "",
+"options": [
+"A Pearson correlation between branch and renewal",
+"A paired-samples t-test",
+"A one-way ANOVA on the yes/no codes",
+"A chi-square test of independence"
+],
+"answer": 3,
+"domain": "Measurement and test selection"
+},
+{
+"prompt": "In the independent-samples t-test, the normality assumption refers most precisely to:",
+"code": "",
+"options": [
+"The distribution of p-values across repeated studies",
+"The distribution of the combined sample, pooled across both groups",
+"The distribution of scores within each population, and hence the sampling distribution of the mean difference",
+"The distribution of the two sample sizes"
+],
+"answer": 2,
+"domain": "Assumptions of parametric tests"
+},
+{
+"prompt": "Homogeneity of variance, as an assumption, states that:",
+"code": "",
+"options": [
+"The two groups contain equal numbers of cases",
+"The two populations have equal variances",
+"The residuals are uncorrelated across time",
+"The data contain no outliers"
+],
+"answer": 1,
+"domain": "Assumptions of parametric tests"
+},
+{
+"prompt": "Sphericity, required by repeated-measures ANOVA, is the condition that:",
+"code": "",
+"options": [
+"The variances of the differences between every pair of within-subject levels are equal",
+"The means at every level are equal",
+"The same number of participants appears at every level",
+"The dependent variable is measured on a nominal scale"
+],
+"answer": 0,
+"domain": "Assumptions of parametric tests"
+},
+{
+"prompt": "Which assumption violation is least likely to be repaired by transforming the dependent variable, and most likely to require a different model altogether?",
+"code": "",
+"options": [
+"Non-normality of residuals",
+"Heteroscedasticity",
+"Non-independence of observations",
+"Non-linearity of a bivariate relationship"
+],
+"answer": 2,
+"domain": "Assumptions of parametric tests"
+},
+{
+"prompt": "In a one-way ANOVA, the normality assumption is most properly evaluated on:",
+"code": "",
+"options": [
+"The group sample sizes",
+"The grand mean",
+"The residuals, equivalently the scores within each group",
+"The obtained F ratio"
+],
+"answer": 2,
+"domain": "Assumptions of parametric tests"
+},
+{
+"prompt": "With 200 cases per group, mild non-normality is usually tolerable in a t-test because:",
+"code": "",
+"options": [
+"Large samples eliminate outliers",
+"Non-normality matters only for non-parametric tests",
+"Large samples make any raw distribution normal",
+"The central limit theorem renders the sampling distribution of the mean approximately normal"
+],
+"answer": 3,
+"domain": "Assumptions of parametric tests"
+},
+{
+"prompt": "Given this output, the most defensible reading is:",
+"code": "Tests of normality - composite wellbeing score\n                    Statistic      df       Sig.\nShapiro-Wilk             .997     2041       .002\n\nSkewness  =   0.09   (SE 0.05)\nKurtosis  =  -0.06   (SE 0.11)\nHistogram =   approximately symmetric, single peak",
+"options": [
+"The scores are severely non-normal, so a non-parametric test is mandatory",
+"Shapiro-Wilk is oversensitive at large n; the near-zero skewness and kurtosis show the departure is trivial",
+"The sample must be re-collected because the test failed",
+"Nothing can be concluded, because normality tests are invalid above n = 1,000"
+],
+"answer": 1,
+"domain": "Assumption-checking protocols"
+},
+{
+"prompt": "A two-group comparison returns the result below. The correct conclusion is:",
+"code": "Levene's test for equality of variances\n   F = 0.68      df1 = 1      df2 = 118      Sig. = .411",
+"options": [
+"There is no evidence against equality of variances, so the pooled-variance t-test is tenable",
+"The scores are normally distributed",
+"The effect size is small",
+"The two group means are equal"
+],
+"answer": 0,
+"domain": "Assumption-checking protocols"
+},
+{
+"prompt": "Mauchly's test is significant (p = .01) in a repeated-measures ANOVA. Standard protocol is to:",
+"code": "",
+"options": [
+"Delete one level of the within-subject factor",
+"Report the uncorrected F, since Mauchly's test is only advisory",
+"Abandon the analysis",
+"Apply a Greenhouse-Geisser or Huynh-Feldt correction to the degrees of freedom"
+],
+"answer": 3,
+"domain": "Assumption-checking protocols"
+},
+{
+"prompt": "On a normal Q-Q plot the points track the diagonal through the middle but bow away from it at both ends. This pattern indicates:",
+"code": "",
+"options": [
+"A coding error in the identifier variable",
+"Perfect normality",
+"Non-independence of observations",
+"Tails heavier or lighter than those of a normal distribution"
+],
+"answer": 3,
+"domain": "Assumption-checking protocols"
+},
+{
+"prompt": "A Durbin-Watson statistic close to 2.0 in a regression indicates:",
+"code": "",
+"options": [
+"That the residuals are normally distributed",
+"That the model explains 2 per cent of the variance",
+"No strong first-order autocorrelation among the residuals",
+"An absence of multicollinearity"
+],
+"answer": 2,
+"domain": "Assumption-checking protocols"
+},
+{
+"prompt": "Which practice most seriously compromises the integrity of a testing protocol?",
+"code": "",
+"options": [
+"Running both the parametric and the non-parametric version and reporting whichever yields p < .05",
+"Reporting which assumption checks were performed and what they showed",
+"Deciding in advance what remedy will be used if an assumption is violated",
+"Checking assumptions before running the inferential test"
+],
+"answer": 0,
+"domain": "Assumption-checking protocols"
+},
+{
+"prompt": "With four groups, running all six pairwise t-tests at alpha = .05 instead of an omnibus test:",
+"code": "",
+"options": [
+"Inflates the familywise Type I error rate to roughly .26",
+"Leaves error rates unchanged",
+"Is a required preliminary step before ANOVA",
+"Reduces the Type I error rate"
+],
+"answer": 0,
+"domain": "t-test and ANOVA family"
+},
+{
+"prompt": "Considering the table below, this result establishes that:",
+"code": "ANOVA - test score by teaching method\n                     SS      df       MS       F      Sig.\nBetween groups    412.7       3    137.6    6.42     .003\nWithin groups    1671.4      78     21.4\nTotal            2084.1      81",
+"options": [
+"At least one group mean differs from at least one other",
+"The largest and the smallest mean differ from each other",
+"The difference between methods is large in practical terms",
+"Every group mean differs from every other group mean"
+],
+"answer": 0,
+"domain": "t-test and ANOVA family"
+},
+{
+"prompt": "In a 2 x 3 factorial ANOVA the interaction term is significant. Interpretation should:",
+"code": "",
+"options": [
+"Concentrate on simple effects, because a main effect may not hold at every level of the other factor",
+"Stop, because no interpretation is possible when an interaction is present",
+"Collapse the design into a one-way ANOVA",
+"Concentrate on the main effects and set the interaction aside"
+],
+"answer": 0,
+"domain": "t-test and ANOVA family"
+},
+{
+"prompt": "ANCOVA carries one assumption beyond those of ANOVA, namely:",
+"code": "",
+"options": [
+"That the groups contain equal numbers of cases",
+"That the covariate is measured after the intervention",
+"Homogeneity of regression slopes, so that the covariate relates to the outcome equally across groups",
+"That the covariate is measured on a nominal scale"
+],
+"answer": 2,
+"domain": "t-test and ANOVA family"
+},
+{
+"prompt": "The principal statistical advantage of a repeated-measures design over an independent-groups design is that:",
+"code": "",
+"options": [
+"It removes the normality assumption",
+"It prevents order and carryover effects",
+"It removes the need for random assignment",
+"Between-subject variability is removed from the error term, raising power"
+],
+"answer": 3,
+"domain": "t-test and ANOVA family"
+},
+{
+"prompt": "Three correlated continuous outcomes are recorded for the same participants under two conditions. The procedure designed for this situation is:",
+"code": "",
+"options": [
+"The Friedman test",
+"Three separate t-tests with no adjustment",
+"MANOVA, which tests the outcomes jointly and controls familywise error",
+"A chi-square test of independence"
+],
+"answer": 2,
+"domain": "t-test and ANOVA family"
+},
+{
+"prompt": "The non-parametric counterpart of the independent-samples t-test is:",
+"code": "",
+"options": [
+"Mann-Whitney U",
+"The Friedman test",
+"McNemar's test",
+"The Wilcoxon signed-rank test"
+],
+"answer": 0,
+"domain": "Non-parametric alternatives"
+},
+{
+"prompt": "Ratings are collected from the same 40 participants under three conditions, and the data are ordinal. The appropriate test is:",
+"code": "",
+"options": [
+"Spearman's rho",
+"The Friedman test",
+"The Kruskal-Wallis H test",
+"Mann-Whitney U"
+],
+"answer": 1,
+"domain": "Non-parametric alternatives"
+},
+{
+"prompt": "The Kruskal-Wallis H test is the rank-based counterpart of:",
+"code": "",
+"options": [
+"Cochran's Q test",
+"The one-way between-groups ANOVA",
+"The repeated-measures ANOVA",
+"The paired-samples t-test"
+],
+"answer": 1,
+"domain": "Non-parametric alternatives"
+},
+{
+"prompt": "Mann-Whitney U is frequently described as a test of medians. That description is strictly accurate only when:",
+"code": "",
+"options": [
+"The underlying data are normally distributed",
+"The two sample sizes are equal",
+"The two distributions have the same shape and spread and differ only in location",
+"Both samples exceed 30 cases"
+],
+"answer": 2,
+"domain": "Non-parametric alternatives"
+},
+{
+"prompt": "A student asserts that non-parametric tests make no assumptions. The best correction is that:",
+"code": "",
+"options": [
+"They can be applied only to nominal data",
+"The assertion is correct; they are genuinely assumption-free",
+"They relax the assumption about distributional form, but still require independent observations, and a median interpretation still assumes similarly shaped distributions",
+"They assume normality but not equal variances"
+],
+"answer": 2,
+"domain": "Non-parametric alternatives"
+},
+{
+"prompt": "When the parametric assumptions are in fact satisfied, using a rank-based test instead typically:",
+"code": "",
+"options": [
+"Costs some statistical power",
+"Has no consequence of any kind",
+"Increases the size of the observed effect",
+"Raises the Type I error rate above alpha"
+],
+"answer": 0,
+"domain": "Non-parametric alternatives"
+},
+{
+"prompt": "Spearman's rho is preferred to Pearson's r when:",
+"code": "",
+"options": [
+"The relationship is monotonic but not linear, or the variables are ordinal",
+"Both variables are nominal",
+"The sample is large",
+"There are no tied ranks in either variable"
+],
+"answer": 0,
+"domain": "Correlation and regression"
+},
+{
+"prompt": "Kendall's tau-b is often preferred to Spearman's rho when:",
+"code": "",
+"options": [
+"Both variables are nominal",
+"The relationship is quadratic",
+"The data are exactly normal",
+"The sample is small and there are many tied ranks"
+],
+"answer": 3,
+"domain": "Correlation and regression"
+},
+{
+"prompt": "A scatterplot shows a pronounced inverted-U pattern, yet Pearson's r is .04. The correct conclusion is that:",
+"code": "",
+"options": [
+"The two variables are unrelated",
+"Pearson's r captures only linear association, so a strong curvilinear relationship can yield r near zero",
+"The sample is too small for a correlation",
+"The variables are statistically independent by definition"
+],
+"answer": 1,
+"domain": "Correlation and regression"
+},
+{
+"prompt": "Reading the collinearity diagnostics below, the indicated problem is:",
+"code": "Coefficients - collinearity diagnostics\nPredictor              B      SE       t     Sig.   Tolerance    VIF\nClass size         -0.41    0.38   -1.08    .283      0.081   12.4\nStudent-teacher     0.37    0.35    1.06    .292      0.083   12.1\nratio",
+"options": [
+"Non-normality of the residuals",
+"Severe multicollinearity, which destabilises the coefficient estimates and their standard errors",
+"Heteroscedasticity of the residuals",
+"A large effect size for both predictors"
+],
+"answer": 1,
+"domain": "Correlation and regression"
+},
+{
+"prompt": "A plot of residuals against fitted values fans outward in a funnel shape. This indicates:",
+"code": "",
+"options": [
+"Multicollinearity among the predictors",
+"Autocorrelation of the residuals",
+"That the model is correctly specified",
+"Heteroscedasticity; consider a transformation, weighted least squares, or robust standard errors"
+],
+"answer": 3,
+"domain": "Correlation and regression"
+},
+{
+"prompt": "A correlation between entrance-examination score and university grades is computed using admitted students only. The likely consequence is that:",
+"code": "",
+"options": [
+"The correlation is attenuated, because the range of examination scores has been restricted",
+"The correlation may now be interpreted causally",
+"The correlation is unaffected",
+"The correlation is inflated by the selection process"
+],
+"answer": 0,
+"domain": "Correlation and regression"
+},
+{
+"prompt": "Given the expected counts below, the recommended procedure is:",
+"code": "Crosstabulation (N = 28) - expected counts in parentheses\n                     Approved        Denied\nScholarship             9 (9.75)      4 (3.25)\nNo scholarship         12 (11.25)     3 (3.75)",
+"options": [
+"Use Fisher's exact test, because two expected counts fall below 5",
+"Convert the counts to percentages and run the chi-square again",
+"Use an independent-samples t-test",
+"Proceed with the Pearson chi-square regardless of cell size"
+],
+"answer": 0,
+"domain": "Categorical and frequency tests"
+},
+{
+"prompt": "The same 60 patients are classified as improved or not improved before and after treatment. The correct test is:",
+"code": "",
+"options": [
+"McNemar's test, because the two classifications are paired",
+"The Kruskal-Wallis H test",
+"A one-way ANOVA",
+"The Pearson chi-square test of independence"
+],
+"answer": 0,
+"domain": "Categorical and frequency tests"
+},
+{
+"prompt": "A chi-square goodness-of-fit test is used when:",
+"code": "",
+"options": [
+"Comparing the observed frequency distribution of one variable against a hypothesised distribution",
+"Testing the association between two categorical variables",
+"Comparing the means of two independent groups",
+"Comparing the variances of two groups"
+],
+"answer": 0,
+"domain": "Categorical and frequency tests"
+},
+{
+"prompt": "A pass or fail outcome is recorded for the same students under three teaching conditions. The appropriate test is:",
+"code": "",
+"options": [
+"The chi-square test of independence",
+"The Kruskal-Wallis H test",
+"An independent-samples t-test",
+"Cochran's Q test"
+],
+"answer": 3,
+"domain": "Categorical and frequency tests"
+},
+{
+"prompt": "An appropriate effect-size index to accompany a significant 3 x 4 chi-square test of independence is:",
+"code": "",
+"options": [
+"The Durbin-Watson statistic",
+"Cramer's V",
+"Cohen's d",
+"Eta-squared"
+],
+"answer": 1,
+"domain": "Categorical and frequency tests"
+},
+{
+"prompt": "A researcher enters column percentages rather than raw counts into a chi-square test. The analysis is invalid because:",
+"code": "",
+"options": [
+"Percentages cannot take negative values",
+"Chi-square is computed from observed and expected frequencies, and percentages misrepresent the actual sample size",
+"Percentages are always ordinal",
+"Chi-square requires normally distributed data"
+],
+"answer": 1,
+"domain": "Categorical and frequency tests"
+},
+{
+"prompt": "Tukey's HSD is designed for:",
+"code": "",
+"options": [
+"Comparing each treatment against one control group only",
+"Follow-up comparisons after a Kruskal-Wallis test",
+"Testing the normality of residuals",
+"All pairwise comparisons when variances are approximately equal"
+],
+"answer": 3,
+"domain": "Post-hoc procedures and error control"
+},
+{
+"prompt": "A one-way ANOVA is significant, but Levene's test was also significant and the group sizes are unequal. The more defensible post-hoc procedure is:",
+"code": "",
+"options": [
+"Tukey's HSD",
+"The Games-Howell procedure",
+"Uncorrected least significant difference (LSD) comparisons",
+"Bonferroni-corrected Pearson correlations"
+],
+"answer": 1,
+"domain": "Post-hoc procedures and error control"
+},
+{
+"prompt": "After a significant Kruskal-Wallis test, the appropriate follow-up is:",
+"code": "",
+"options": [
+"Tukey's HSD applied to the raw scores",
+"Independent-samples t-tests with no adjustment",
+"Mauchly's test of sphericity",
+"Dunn's test with a Bonferroni or Holm adjustment"
+],
+"answer": 3,
+"domain": "Post-hoc procedures and error control"
+},
+{
+"prompt": "Dunnett's test is specifically suited to:",
+"code": "",
+"options": [
+"Testing a two-way interaction",
+"Comparing two variances",
+"Comparing several treatment groups against a single control group",
+"Every possible pairwise comparison"
+],
+"answer": 2,
+"domain": "Post-hoc procedures and error control"
+},
+{
+"prompt": "Compared with Holm's sequential procedure, the standard Bonferroni correction:",
+"code": "",
+"options": [
+"Is uniformly more powerful",
+"Applies only to non-parametric tests",
+"Controls the familywise error rate but is more conservative, so it has less power",
+"Fails to control the familywise error rate"
+],
+"answer": 2,
+"domain": "Post-hoc procedures and error control"
+},
+{
+"prompt": "Planned (a priori) contrasts differ from post-hoc tests in that they:",
+"code": "",
+"options": [
+"Are always computed on ranks",
+"Cannot be used within an ANOVA framework",
+"Are specified before the data are examined and, being few and theory-driven, need not wait on a significant omnibus test",
+"Require no hypothesis at all"
+],
+"answer": 2,
+"domain": "Post-hoc procedures and error control"
+},
+{
+"prompt": "A test returns p = .03. The correct interpretation is that:",
+"code": "",
+"options": [
+"There is a 97 per cent probability that the alternative hypothesis is true",
+"The observed effect is large",
+"There is a 3 per cent probability that the null hypothesis is true",
+"If the null hypothesis were true, data at least as extreme as those observed would arise 3 per cent of the time"
+],
+"answer": 3,
+"domain": "Effect size, power and inference"
+},
+{
+"prompt": "With 12,000 cases, a mean difference of 0.4 points on a 100-point scale reaches p < .001. The responsible report:",
+"code": "",
+"options": [
+"Presents the p-value alone",
+"Foregrounds the effect size and confidence interval, since significance at this sample size does not imply practical importance",
+"Declares a strong effect on the grounds that p is very small",
+"Removes cases until the p-value exceeds .05"
+],
+"answer": 1,
+"domain": "Effect size, power and inference"
+},
+{
+"prompt": "Cohen's conventional benchmarks for d of 0.20, 0.50 and 0.80 correspond to:",
+"code": "",
+"options": [
+"Weak, moderate and strong correlations",
+"Small, medium and large effects",
+"Non-significant, significant and highly significant results",
+"Type I, Type II and Type III error rates"
+],
+"answer": 1,
+"domain": "Effect size, power and inference"
+},
+{
+"prompt": "An appropriate effect-size measure to report alongside a one-way ANOVA is:",
+"code": "",
+"options": [
+"Eta-squared or omega-squared",
+"Cohen's kappa",
+"Cramer's V",
+"The variance inflation factor"
+],
+"answer": 0,
+"domain": "Effect size, power and inference"
+},
+{
+"prompt": "A test returns p = .21. The correct conclusion is that:",
+"code": "",
+"options": [
+"The null hypothesis has been proven true",
+"There is insufficient evidence to reject the null hypothesis, which is not the same as evidence that the effect is zero",
+"The effect is definitely zero in the population",
+"The data must be non-normal"
+],
+"answer": 1,
+"domain": "Effect size, power and inference"
+},
+{
+"prompt": "Which statement about statistical power is correct?",
+"code": "",
+"options": [
+"Power analysis is relevant only to non-parametric tests",
+"Power is unrelated to the size of the effect being sought",
+"An a priori power analysis establishes the sample size needed to detect a specified effect, whereas post-hoc observed power computed from the obtained p-value adds no new information",
+"Observed power is the most informative statistic to report after a non-significant result"
+],
+"answer": 2,
+"domain": "Effect size, power and inference"
+},
+{
+"prompt": "Levene's test is significant for a two-group comparison. The standard remedy is:",
+"code": "",
+"options": [
+"Reporting the pooled t-test without comment",
+"Welch's t-test, which does not pool the variances and adjusts the degrees of freedom",
+"Deleting the group with the larger variance",
+"Raising alpha to .10 to compensate"
+],
+"answer": 1,
+"domain": "Violations and remedies"
+},
+{
+"prompt": "A logarithmic transformation is applied to strongly right-skewed revenue data. The consequence that must be disclosed is that:",
+"code": "",
+"options": [
+"The transformation removes the independence assumption",
+"The effective sample size is doubled",
+"Results now refer to the transformed scale, and back-transformed means describe geometric rather than arithmetic means",
+"The transformation licenses causal interpretation"
+],
+"answer": 2,
+"domain": "Violations and remedies"
+},
+{
+"prompt": "Bootstrapping is used principally to:",
+"code": "",
+"options": [
+"Impute missing values",
+"Delete outliers automatically",
+"Guarantee that the raw data are normally distributed",
+"Obtain standard errors and confidence intervals by resampling, without assuming a particular sampling distribution"
+],
+"answer": 3,
+"domain": "Violations and remedies"
+},
+{
+"prompt": "In a randomised experiment with a small sample and a heavy-tailed outcome, a permutation test is attractive because:",
+"code": "",
+"options": [
+"It removes the need to state a hypothesis",
+"Its p-value follows from the randomisation itself, so no normality assumption is required",
+"It increases the effective sample size",
+"It converts the dependent variable to a nominal scale"
+],
+"answer": 1,
+"domain": "Violations and remedies"
+},
+{
+"prompt": "Two extreme observations are traced to source and verified as genuine. Best practice is to:",
+"code": "",
+"options": [
+"Retain them but omit the assumption checks",
+"Report the analysis with and without them as a sensitivity check, and state the decision rule in advance",
+"Delete them without comment",
+"Replace them with the sample mean"
+],
+"answer": 1,
+"domain": "Violations and remedies"
+},
+{
+"prompt": "Students are nested within 20 classrooms, and scores within a classroom resemble one another more than scores across classrooms. The assumption at risk and its remedy are:",
+"code": "",
+"options": [
+"Homoscedasticity; apply Welch's correction",
+"Sphericity; apply a Greenhouse-Geisser correction",
+"Independence; fit a multilevel or mixed-effects model, or use cluster-robust standard errors",
+"Normality; apply a logarithmic transformation"
+],
+"answer": 2,
+"domain": "Violations and remedies"
+}
+];
+const DOMAINS = ["Measurement and test selection", "Assumptions of parametric tests", "Assumption-checking protocols", "t-test and ANOVA family", "Non-parametric alternatives", "Correlation and regression", "Categorical and frequency tests", "Post-hoc procedures and error control", "Effect size, power and inference", "Violations and remedies"];
+const LETTERS = ["A","B","C","D"];
+const WEAK_THRESHOLD = 0.60;   // domains below this are flagged for review
+
+const state = { i:0, answers:new Array(QUESTIONS.length).fill(null), submitted:false, profile:{} };
+
+const $ = id => document.getElementById(id);
+const startScreen=$("startScreen"), quizScreen=$("quizScreen"), doneScreen=$("doneScreen"), progress=$("progress");
+
+/* ---- Coverage list on the start screen ---- */
+DOMAINS.forEach(d => {
+  const li=document.createElement("li"); li.textContent=d; $("coverList").appendChild(li);
+});
+$("destNote").textContent = "Responses are sent to " + CONFIG.instructorEmail;
+
+/* ---- Start ---- */
+$("startBtn").addEventListener("click", () => {
+  const name=$("fName").value.trim();
+  if(!name){ $("fName").focus(); $("fName").style.borderColor="var(--bad)"; return; }
+  state.profile = {
+    name,
+    studentId: $("fId").value.trim() || "(not given)",
+    section: $("fSection").value.trim() || "(not given)",
+    email: $("fEmail").value.trim() || "(not given)"
+  };
+  startScreen.classList.add("hide");
+  progress.classList.remove("hide");
+  quizScreen.classList.remove("hide");
+  render();
+});
+
+/* ---- Render current question ---- */
+function render(){
+  const q = QUESTIONS[state.i];
+  $("qBadge").textContent = "Q" + (state.i+1);
+  $("qPrompt").textContent = q.prompt;
+  $("qDomain").textContent = q.domain;
+
+  const code = $("qCode");
+  if(q.code && q.code.trim().length){ code.style.display="block"; code.textContent = q.code; }
+  else { code.style.display="none"; }
+
+  const ul = $("qOpts"); ul.innerHTML="";
+  q.options.forEach((opt, idx) => {
+    const li=document.createElement("li");
+    li.className="opt" + (state.answers[state.i]===idx ? " sel":"");
+    li.tabIndex=0;
+    li.setAttribute("role","button");
+    li.innerHTML = '<span class="let">'+LETTERS[idx]+'</span><span class="txt"></span>';
+    li.querySelector(".txt").textContent = opt;
+    const choose = () => {
+      state.answers[state.i]=idx;
+      [...ul.children].forEach(c=>c.classList.remove("sel"));
+      li.classList.add("sel");
+      $("nextBtn").disabled=false;
+      updateProgress();
+    };
+    li.addEventListener("click", choose);
+    li.addEventListener("keydown", e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); choose(); } });
+    ul.appendChild(li);
+  });
+
+  $("prevBtn").disabled = (state.i===0);
+  $("nextBtn").disabled = (state.answers[state.i]===null);
+  $("nextBtn").textContent = (state.i===QUESTIONS.length-1) ? "Finish" : "Next";
+  updateProgress();
+}
+
+function updateProgress(){
+  const total=QUESTIONS.length;
+  const answered=state.answers.filter(a=>a!==null).length;
+  $("qof").textContent = "Question " + (state.i+1) + " of " + total;
+  $("answeredCount").textContent = answered + " answered";
+  $("barfill").style.width = ((state.i+1)/total*100) + "%";
+}
+
+/* ---- Navigation ---- */
+$("nextBtn").addEventListener("click", () => {
+  if(state.answers[state.i]===null) return;          // next item revealed only after answering
+  if(state.i < QUESTIONS.length-1){ state.i++; render(); window.scrollTo({top:0,behavior:"smooth"}); }
+  else { finish(); }
+});
+$("prevBtn").addEventListener("click", () => {
+  if(state.i>0){ state.i--; render(); window.scrollTo({top:0,behavior:"smooth"}); }
+});
+$("reviewBtn").addEventListener("click", () => {
+  if(state.submitted) return;
+  doneScreen.classList.add("hide");
+  progress.classList.remove("hide");
+  quizScreen.classList.remove("hide");
+  state.i=QUESTIONS.length-1; render();
+});
+
+/* ---- Finish: completion screen, no score shown ---- */
+function finish(){
+  quizScreen.classList.add("hide");
+  progress.classList.add("hide");
+  doneScreen.classList.remove("hide");
+  $("sName").textContent=state.profile.name;
+  $("sId").textContent=state.profile.studentId;
+  $("sSection").textContent=state.profile.section;
+  $("sAnswered").textContent = state.answers.filter(a=>a!==null).length + " / " + QUESTIONS.length;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---- Silent scoring and diagnostic profile ---- */
+function grade(){
+  let correct=0;
+  const detail=[];
+  const byDomain={};
+  DOMAINS.forEach(d => byDomain[d]={correct:0,total:0,missed:[]});
+
+  QUESTIONS.forEach((q,idx) => {
+    const chosen=state.answers[idx];
+    const isCorrect=(chosen===q.answer);
+    if(isCorrect) correct++;
+    byDomain[q.domain].total++;
+    if(isCorrect) byDomain[q.domain].correct++;
+    else byDomain[q.domain].missed.push("Q"+(idx+1));
+    detail.push(
+      "Q"+String(idx+1).padStart(2,"0")+
+      " | "+(chosen===null ? "-" : LETTERS[chosen])+
+      " | key "+LETTERS[q.answer]+
+      " | "+(isCorrect ? "correct" : "wrong")+
+      " | "+q.domain
+    );
+  });
+
+  const total=QUESTIONS.length;
+  const pct=Math.round(correct/total*1000)/10;
+
+  const profile=[]; const weak=[];
+  DOMAINS.forEach(d => {
+    const b=byDomain[d];
+    const p=Math.round(b.correct/b.total*100);
+    const flag = (b.correct/b.total) < WEAK_THRESHOLD ? "  << review" : "";
+    profile.push(d.padEnd(40,".")+" "+b.correct+"/"+b.total+" ("+p+"%)"+flag);
+    if((b.correct/b.total) < WEAK_THRESHOLD) weak.push(d+" ("+b.correct+"/"+b.total+", missed "+b.missed.join(", ")+")");
+  });
+
+  return { correct, total, pct, detail, profile, weak };
+}
+
+/* ---- Send ---- */
+function setStatus(kind,msg){
+  const s=$("statusMsg"); s.className="statusmsg show "+kind; s.textContent=msg;
+}
+
+$("sendBtn").addEventListener("click", async () => {
+  if(state.submitted) return;
+  const r = grade();
+  const body = {
+    _subject: "[STAT 210 Diagnostic] "+state.profile.name+" — "+r.correct+"/"+r.total,
+    to_instructor: CONFIG.instructorEmail,
+    test: CONFIG.testName,
+    submitted_at: new Date().toString(),
+    name: state.profile.name,
+    student_number: state.profile.studentId,
+    section: state.profile.section,
+    respondent_email: state.profile.email,
+    score: r.correct + " / " + r.total,
+    percentage: r.pct + "%",
+    items_answered: state.answers.filter(a=>a!==null).length + " / " + r.total,
+    diagnostic_profile: r.profile.join("\n"),
+    areas_for_review: r.weak.length ? r.weak.join("\n") : "None below " + Math.round(WEAK_THRESHOLD*100) + "%",
+    item_breakdown: r.detail.join("\n")
+  };
+
+  if(CONFIG.endpoint.indexOf("REPLACE_WITH_FORMSPREE_ID") !== -1){
+    setStatus("info","The submission address has not been set up yet, so your responses were not sent. Please tell your instructor before closing this page.");
+    return;
+  }
+
+  $("sendBtn").disabled=true; $("reviewBtn").disabled=true;
+  setStatus("info","Sending your responses to your instructor…");
+  try{
+    const res = await fetch(CONFIG.endpoint, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json", "Accept":"application/json" },
+      body: JSON.stringify(body)
+    });
+    if(res.ok){
+      state.submitted=true;
+      setStatus("good","Your responses have been sent. You may now close this page.");
+      $("sendBtn").textContent="Sent";
+    } else {
+      $("sendBtn").disabled=false; $("reviewBtn").disabled=false;
+      setStatus("bad","The server rejected the submission. Check your internet connection and select Send again; if it keeps failing, tell your instructor.");
+    }
+  }catch(err){
+    $("sendBtn").disabled=false; $("reviewBtn").disabled=false;
+    setStatus("bad","The responses could not be sent because the connection failed. Check your internet connection and select Send again.");
+  }
+});
+</script>
+</body>
+</html>
